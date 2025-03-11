@@ -1,0 +1,79 @@
+WATER QUALITY MONITORING SYSTEM - WIRING DIAGRAM
+================================================
+
+1. ARDUINO UNO CONNECTIONS:
+---------------------------
+- 5V  -> I2C LCD VCC, TDS Sensors VCC, Flow Sensors VCC
+- GND -> I2C LCD GND, TDS Sensors GND, Flow Sensors GND, ESP8266 GND
+- A0  -> TDS Sensor 1 Signal
+- A1  -> TDS Sensor 2 Signal
+- D2  -> Flow Sensor 1 Signal (Interrupt 0)
+- D3  -> Flow Sensor 2 Signal (Interrupt 1)
+- A4/SDA -> I2C LCD SDA
+- A5/SCL -> I2C LCD SCL
+- D8  -> ESP8266 RX (Software Serial TX)
+- D9  -> ESP8266 TX (Software Serial RX)
+
+2. ESP8266 CONNECTIONS:
+-----------------------
+- VCC -> 3.3V from separate power supply or Arduino 3.3V
+- GND -> Arduino GND
+- RX  -> Arduino D8 (Software Serial TX)
+- TX  -> Arduino D9 (Software Serial RX)
+- CH_PD/EN -> 3.3V (to enable the module)
+- D1/GPIO5 -> Blue LED (WiFi status) with 220 ohm resistor to GND
+- D2/GPIO4 -> Green LED (Data received) with 220 ohm resistor to GND
+- D3/GPIO0 -> Yellow LED (Data sent) with 220 ohm resistor to GND
+
+Note: Each LED should have its anode (+) connected to the ESP8266 pin 
+and cathode (-) connected to ground through a 220 ohm resistor.
+
+3. 16x2 I2C LCD CONNECTIONS:
+----------------------------
+- VCC -> Arduino 5V
+- GND -> Arduino GND
+- SDA -> Arduino A4/SDA
+- SCL -> Arduino A5/SCL
+
+4. TDS SENSORS:
+--------------
+TDS Sensor 1 (Input water):
+- VCC -> Arduino 5V
+- GND -> Arduino GND
+- Signal -> Arduino A0
+
+TDS Sensor 2 (Output water):
+- VCC -> Arduino 5V
+- GND -> Arduino GND
+- Signal -> Arduino A1
+
+5. FLOW SENSORS:
+---------------
+Flow Sensor 1 (Input flow):
+- VCC (Red) -> Arduino 5V
+- GND (Black) -> Arduino GND
+- Signal (Yellow) -> Arduino D2 (Interrupt 0)
+
+Flow Sensor 2 (Waste flow):
+- VCC (Red) -> Arduino 5V
+- GND (Black) -> Arduino GND
+- Signal (Yellow) -> Arduino D3 (Interrupt 1)
+
+NOTES:
+------
+1. Use a separate 5V power supply if the current draw exceeds Arduino's capacity
+2. ESP8266 operates at 3.3V logic level - if using NodeMCU, it has built-in level shifters
+3. Add 10K pull-up resistors to flow sensor signal lines if you experience erratic readings
+4. I2C LCD module already has built-in contrast and backlight control
+5. I2C address of the LCD is typically 0x27 or 0x3F, change in code if needed
+6. Flow sensors may require additional capacitors (100nF) between VCC and GND for stability
+7. TDS sensors may require calibration - follow manufacturer's instructions
+8. Status LED meanings:
+   - Blue LED (D1/GPIO5): ON when WiFi is connected, OFF when disconnected
+   - Green LED (D2/GPIO4): Blinks briefly when data is received from Arduino
+   - Yellow LED (D3/GPIO0): ON during data transmission, blinks on success, rapid blinks on error
+9. If LEDs aren't working, check:
+   - LED polarity (longer leg/anode to ESP8266 pin)
+   - Resistor values (220-330 ohm recommended)
+   - Pin connections match the code (pins D1, D2, D3 on ESP8266)
+   - Power supply is sufficient for the ESP8266 and LEDs

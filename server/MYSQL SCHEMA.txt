@@ -1,0 +1,36 @@
+-- Water Quality Monitoring Database Schema (MySQL version)
+
+-- Create database if not exists
+-- CREATE DATABASE IF NOT EXISTS water_quality;
+-- USE water_quality;
+
+-- Create table for water quality readings
+CREATE TABLE IF NOT EXISTS water_readings (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tds_in FLOAT NOT NULL,
+    tds_out FLOAT NOT NULL,
+    flow_in FLOAT NOT NULL,
+    waste_flow FLOAT NOT NULL,
+    flow_out FLOAT NOT NULL,
+    reading_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create index for faster time-based queries
+CREATE INDEX idx_reading_time ON water_readings(reading_time);
+
+-- Add view for daily averages
+CREATE OR REPLACE VIEW daily_averages AS
+SELECT 
+    DATE(reading_time) AS date,
+    AVG(tds_in) AS avg_tds_in,
+    AVG(tds_out) AS avg_tds_out,
+    AVG(flow_in) AS avg_flow_in,
+    AVG(waste_flow) AS avg_waste_flow,
+    AVG(flow_out) AS avg_flow_out,
+    COUNT(*) AS num_readings
+FROM 
+    water_readings
+GROUP BY 
+    DATE(reading_time)
+ORDER BY 
+    DATE(reading_time) DESC;
